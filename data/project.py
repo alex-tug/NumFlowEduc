@@ -16,7 +16,7 @@ class ProjectData():
     def __init__(self,  dx= 0.002, dt = 0.001, c = 1.0, steps = 50):
         
         self.dx = dx
-        self.x = np.arange(-2,5, dx)
+        self.x = np.arange(-5,10, dx)
         self.size_x = np.size(self.x)
         self.dt = dt
         self.c = c
@@ -32,8 +32,8 @@ class ProjectData():
         print("CFL = {}".format(self.CFL))
         
         self.figures = {'lw':plt.figure('lw'), 'upw':plt.figure('upw')}
-        self.xlim_low = 0
-        self.xlim_high = 3
+        self.xlim_low = -4
+        self.xlim_high = 10
         self.ylim_low = -0.5
         self.ylim_high = 1.5
         
@@ -49,14 +49,14 @@ class ProjectData():
         if shape != '':
             self.signal_shape = shape
             if shape == 'step':
-                for i in range(0,self.size_x) :
+                for i in range(self.xlim_low,self.size_x) :
                     if self.x[i]<1 :
                         self.u_00[i] = 1.0
                     else :
                         self.u_00[i] = 0.0
                         
             elif shape == 'tri':    # triangle
-                for i in range(0,self.size_x) :
+                for i in range(self.xlim_low,self.size_x) :
                     if self.x[i]<0.5 :
                         self.u_00[i] = 2 * self.x[i]
                     elif self.x[i]<1.0 :
@@ -65,10 +65,19 @@ class ProjectData():
                         self.u_00[i] = 0.0
                         
             elif shape == 'wall':
-                for i in range(0,self.size_x) :
+                for i in range(self.xlim_low,self.size_x) :
                     if self.x[i]<0.5 :
                         self.u_00[i] = 0.0
                     elif self.x[i]<1.0 :
+                        self.u_00[i] = 1.0
+                    else :
+                        self.u_00[i] = 0.0
+                        
+            elif shape == 'thinwall':
+                for i in range(self.xlim_low,self.size_x) :
+                    if self.x[i]<0.7 :
+                        self.u_00[i] = 0.0
+                    elif self.x[i]<0.72 :
                         self.u_00[i] = 1.0
                     else :
                         self.u_00[i] = 0.0
@@ -76,9 +85,20 @@ class ProjectData():
             elif shape == 'gauss':
                 sigma = 0.15
                 mue = 0.5
-                for i in range(0,self.size_x) :
+                for i in range(self.xlim_low,self.size_x) :
                     if self.x[i]<1.0 :
                         self.u_00[i] = 0.5 * 1.0/(sigma * np.sqrt(2 * np.pi)) * np.exp( - 0.5 * ((self.x[i]-mue)/sigma)**2 )
+                    else :
+                        self.u_00[i] = 0.0
+                        
+            elif shape == 'wave':
+                amp = 0.5
+                fact = 2.0
+                phase = 0.5
+                offset = 0.5
+                for i in range(self.xlim_low,self.size_x) :
+                    if self.x[i]<1.0 :
+                        self.u_00[i] = amp * np.sin(fact*(self.x[i]-phase)*(2*np.pi)) + offset
                     else :
                         self.u_00[i] = 0.0
         
