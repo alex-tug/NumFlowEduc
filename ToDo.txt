@@ -1,0 +1,10 @@
+
+Dinge die momentan nicht funktionieren oder noch zu erledigen sind:
+
+- CrankNicolson-Verfahren vervollstaendigen
+	funktioniert mittlerweile, 
+	koennte schneller sein, 
+	muss noch getestet werden
+	
+- wenn die zu plottenden Werte auf unendlich springen, 
+	wirft matplotlib einen error (cast nach int funktioniert dann nicht mehr)

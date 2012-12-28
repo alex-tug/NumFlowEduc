@@ -1,15 +1,12 @@
 '''
-Created on 22.12.2012
-
-@author: Alex
+input output handling/ file handling 
+    define makeSurePathExists(path)
 '''
 
 import os
 import errno
 
-
-
-# http://stackoverflow.com/questions/273192/python-best-way-to-create-directory-if-it-doesnt-exist-for-file-write
+# from: http://stackoverflow.com/questions/273192/python-best-way-to-create-directory-if-it-doesnt-exist-for-file-write
 def makeSurePathExists(path):
     try:
         os.makedirs(path)
