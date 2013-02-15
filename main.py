@@ -29,13 +29,13 @@ def main():
     c_vec  = [1.5]
     
     #step_vec = [10,50,100,500,1000]
-    step_vec = [10,50, 500]
+    step_vec = [100]
     
     #signal_vec =['step', 'wall', 'thinwall', 'tri', 'gauss', 'wave']
-    signal_vec =['step','wave']
+    signal_vec =['wave']
     
     #method_vec = ['lw', 'upw', 'lf', 'cn']
-    method_vec = ['upw', 'cn']                  # methods used for flow-calculation
+    method_vec = ['upw', 'lf']                  # methods used for flow-calculation
     
     # iterate over all combinations!
     for par in product(dx_vec, dt_vec, c_vec, step_vec): 

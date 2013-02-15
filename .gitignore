@@ -2,3 +2,6 @@
 */images/*
 images\
 images/*
+.git\
+.project
+.pydevproject

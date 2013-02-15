@@ -3,6 +3,7 @@ Crank-Nicolson scheme
 '''
 
 import numpy as np
+import scipy.sparse as sparse
 import scipy.linalg as la
 
 
@@ -31,28 +32,51 @@ def calcCrankNicolson(pd, to_step): #pd ... project data
     #        1             1              1         ...          1              1
     #     -th/2*CFL    -th/2*CFL      -th/2*CFL     ...      -th/2*CFL          0
     
-    A_band = np.zeros( (3,pd.size_x) )
-    A_band[0,1:] =       th/2.0 * pd.CFL * np.ones(pd.size_x-1)
-    A_band[1,:] = np.ones(pd.size_x)
-    A_band[2,:-1] = -1 * th/2.0 * pd.CFL * np.ones(pd.size_x-1)
-    # upper left corner is zero because this upper diagonal is one position smaller than the main diagonal
-    A_band[0,0] = 0.
-    A_band[2,-1] = 0.     # same as upper left corner
+    #===========================================================================
+    # A_band = np.zeros( (3,pd.size_x) )
+    # A_band[0,1:] =       th/2.0 * pd.CFL * np.ones(pd.size_x-1)
+    # A_band[1,:] = np.ones(pd.size_x)
+    # A_band[2,:-1] = -1 * th/2.0 * pd.CFL * np.ones(pd.size_x-1)
+    # # upper left corner is zero because this upper diagonal is one position smaller than the main diagonal
+    # A_band[0,0] = 0.
+    # A_band[2,-1] = 0.     # same as upper left corner
+    #===========================================================================
     
-    #print "A_band", A_band
+    #better:
+    A_data = np.array([ 
+                        np.ones(pd.size_x) * th/2.0 * pd.CFL,
+                        np.ones(pd.size_x),
+                        np.ones(pd.size_x) * th/2.0 * pd.CFL * (-1)
+                      ])
+    
+    A_offsets = np.array( [1, 0, -1] )
+    A_band = sparse.dia_matrix( (A_data, A_offsets), shape=(pd.size_x,pd.size_x) )
+    
+    print "A_band.todense() ", A_band.todense()
+    
+    # "todense" ... de-compress band matrix
+    A_band_inv = la.inv( A_band.todense() )
+    
+    print "A_band_inv", A_band_inv
+    
+    print "A_band ", A_band
     
     u_0_right = np.zeros(pd.size_x) 
     
-    for n in range(1,to_step) :
+    #print("{}".format(np.dot(A_band_inv, u_0_right)))
+    
+    for n in range(1,to_step) : # timesteps
                         
         # u_0_right is the right hand side of A_diag * u_1 = u_0_right which come from the CrankNicolson formula
         u_0_right[1:-1] = pd.u_0[1:-1]\
-                        + (th-1) / 2.0 * pd.CFL * pd.u_0[2:]\
-                        - (th-1) / 2.0 * pd.CFL * pd.u_0[0:-2]\
+                        + (th-1.0) / 2.0 * pd.CFL * pd.u_0[2:]\
+                        - (th-1.0) / 2.0 * pd.CFL * pd.u_0[0:-2]\
         
         #print len(A_band)
-        pd.u_1 = la.solve_banded((1, 1), A_band, u_0_right)        
+        #pd.u_1 = la.solve_banded((1, 1), A_band, u_0_right)        
         # quite slow ...        
+        
+        pd.u_1 = np.dot(A_band_inv, u_0_right)
         
         pd.u_n1 = pd.u_0
         pd.u_0 = pd.u_1     # calculated values are input values for the next step
