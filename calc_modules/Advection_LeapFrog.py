@@ -10,11 +10,23 @@ def calcLeapFrog(pd, to_step):  #pd ... project data
     calcUpwind(pd, to_step=2)
     
     for n in range(2,to_step) :
-        # according to: Malcherek, Num.Methoden d. Stroemungsmech. Glchg: 5.10, S.58              
-        pd.u_1[1:-1] =  \
-                         pd.CFL * pd.u_0[0:-2]\
-                       + 1      * pd.u_n1[1:-1]\
-                       - pd.CFL * pd.u_0[2:]
+        # new: trasport equation
+        # a ... temporary variable for better readability
+        # a = pd.v * pd.dt / (pd.dx * pd.dx)
+        a = pd.CFL / pd.PE
+        
+        pd.u_1[1:-1] =        1.0                * pd.u_n1[1:-1]\
+                       +pd.CFL * ( 1 +2.0/pd.PE) * pd.u_0[0:-2]\
+                       +pd.CFL * (   -4.0/pd.PE) * pd.u_0[1:-1]\
+                       +pd.CFL * (-1 +2.0/pd.PE) * pd.u_0[2:]
+        
+                      
+        # old: according to: Malcherek, Num.Methoden d. Stroemungsmech. Glchg: 5.10, S.58
+        # without diffusion
+        #pd.u_1[1:-1] =  \
+        #                 pd.CFL * pd.u_0[0:-2]\
+        #               + 1      * pd.u_n1[1:-1]\
+        #               - pd.CFL * pd.u_0[2:]
         # either this calculation is wrong,
         # or this method is extremely unstable
         

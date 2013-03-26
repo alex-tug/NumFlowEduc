@@ -8,3 +8,5 @@ Dinge die momentan nicht funktionieren oder noch zu erledigen sind:
 	
 - wenn die zu plottenden Werte auf unendlich springen, 
 	wirft matplotlib einen error (cast nach int funktioniert dann nicht mehr)
+
+- Stabilitätskriterien abprüfen und Meldung anzeigen wenn erfüllt / nicht erfüllt

@@ -6,8 +6,74 @@ import numpy as np
 import scipy.sparse as sparse
 import scipy.linalg as la
 
-
 def calcCrankNicolson(pd, to_step): #pd ... project data
+    ''' 
+    Crank-Nicolson scheme according to: 
+        Malcherek, 'Num.Methoden d. Stroemungsmech.' Eq: 5.13, p.59
+    and solver for tridiagonal matrix: 
+        H.Sormann, 'Numerische Methoden in der Physik', Chapter 2.6 p.39f
+    
+    NOT FINISHED!
+    '''
+    
+    th = 0.75   # theta, Crank-Nicolson is stable for theta >= 0.5
+    
+    # A ... Band(!)-Matrix which comes from the CrankNicolson formula
+    # A:
+    #    1            th/2*CFL         0            ...            0
+    #  -th/2*CFL         1           th/2*CFL        0             0
+    #    0            -th/2*CFL        1           th/2*CFL        0
+    #    ...
+    #    ...                                                    th/2*CFL  
+    #    0            ...................          -th/2*CFL       1 
+    
+    # A stored as Band matrix:    (otherwise its huge!)
+    # A_band:
+    #        0          th/2*CFL       th/2*CFL     ...       th/2*CFL       th/2*CFL 
+    #        1             1              1         ...          1              1
+    #     -th/2*CFL    -th/2*CFL      -th/2*CFL     ...      -th/2*CFL          0
+        
+    size = pd.size_x    # just for better readability
+        
+    a = th/2.0 * pd.CFL
+    b = 1
+    c = th/2.0 * pd.CFL * (-1)
+    
+    d = np.zeros(size)
+    m = np.zeros(size)
+
+    d[0] = b
+    for j in range(1, size-1):
+        
+        m[j] = a / d[j-1]
+        
+        d[j] = b - m[j] * c
+
+    for n in range(1, to_step) : # timesteps
+        
+        y = np.zeros(size)                        
+
+        y[0] = pd.u_0[0]        
+        for i in range(1, size-1):
+            y[i] = pd.u_0[i] - m[i] * y[i-1]
+            #if i < 4: print i, "  y[i]: ", y[i]
+        
+        #print "y[size-1]: ", y[size-1], "  n=", n, "  th=", th
+        #print "d[size-1]: ", d[size-1]
+        
+        pd.u_1[size-1] = y[size-1] / d[size-1]
+        for j in range(size-2, 0, -1):            
+            pd.u_1[j] = pd.u_0[j] - m[j] * y[j-1]
+
+
+        pd.u_n1 = pd.u_0
+        pd.u_0 = pd.u_1     # calculated values are input values for the next step
+        
+        pd.i_min += 1       # first point can't be calculated, so its value is undefined
+        pd.i_max -= 1       # last point can't be calculated, so its value is undefined 
+        
+        
+def calcCrankNicolson_old(pd, to_step): #pd ... project data
     ''' 
     Crank-Nicolson scheme
     according to: Malcherek, 'Num.Methoden d. Stroemungsmech.' Eq: 5.13, p.59

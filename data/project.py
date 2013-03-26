@@ -12,7 +12,7 @@ from io_handling.file_handling import makeSurePathExists
 class ProjectData():
     # this class holds all input and output data for the flow-calculations
     
-    def __init__(self,  dx= 0.002, dt = 0.001, c = 1.0, steps = 50):
+    def __init__(self,  dx=0.002, dt=0.001, c=1.0, v=1.0, steps=50):
         
         self.dx = dx                        # dx ... spatial resolution
         self.x = np.arange(-10,15, dx)      # vector of all x-values;  (from, to, resolution)
@@ -20,8 +20,9 @@ class ProjectData():
         #print "self.size_x", self.size_x
         self.dt = dt                        # dt ... temporal resolution
         self.c = c                          # c  ... velocity of flow
+        self.v = v                          # v  ... coefficient for transport equation
         self.steps = steps                  # number of steps to be calculated 
-        #print "self.steps", self.steps      # (full spatial shift = c * dt/dx * steps = CFL * steps)
+        #print "self.steps", self.steps     # (full spatial shift = c * dt/dx * steps = CFL * steps)
         
         self.u_n1 = np.zeros(self.size_x)   # values at time t' = t-1
         self.u_0 = np.zeros(self.size_x)    # values before calculation, will be set to u_1 after each step
@@ -32,11 +33,17 @@ class ProjectData():
         self.CFL = self.c*self.dt/self.dx   # Courant number, Upwind and LaxWendroff are stable for CFL <= 1
         print("CFL = {}".format(self.CFL))
         self.CFL2 = self.CFL**2.0           # just for easy reading formulas
+        if self.v != 0:                     # avoid division by zero
+            self.PE = self.c*self.dx/self.v # Peclet number
+        else:
+            self.PE = 0.0
         
-        self.figures = {'lw':plt.figure('lw'), \
-                        'upw':plt.figure('upw'), \
-                        'lf':plt.figure('lf'), \
-                        'cn':plt.figure('cn')}  # store a figure for each method, doesn't work complete well...
+        self.figures = {
+                            'lw':plt.figure('lw'), \
+                            'upw':plt.figure('upw'), \
+                            'lf':plt.figure('lf'), \
+                            'cn':plt.figure('cn')
+                        }  # store a figure for each method, doesn't work complete well...
                                             
         self.xlim_low = -4                  # boundaries for the figures
         self.xlim_high = 10
@@ -149,8 +156,8 @@ class ProjectData():
         as .png to out_path(default='images/') 
         '''
         
-        out_filename = '{0}-{1}-cfl_{2:.2f}-steps_{3}'\
-                        .format(method, self.signal_shape, self.CFL, self.steps)
+        out_filename = '{0}-{1}-dx_{2:.2f}-dt_{3:.2f}-c_{4:.2f}-v_{5}-steps_{6}'\
+                        .format(method, self.signal_shape, self.dx, self.dt, self.c, self.v, self.steps)
         
         makeSurePathExists(out_path)
         

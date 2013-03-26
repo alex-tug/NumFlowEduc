@@ -22,7 +22,7 @@ def calcAdvection(method, pd):
     pd.u_0 = pd.u_00                # reset data to input signal
     
     plt.clf()                       # clear plot
-    fig1 = plt.figure(method)       # doesn't completely well yet...
+    fig1 = plt.figure(method)       # doesn't work completely well yet...
     plt.plot(pd.x,pd.u_0,'g-')      # plot input signal; green
     plt.plot(pd.x+pd.c*pd.dt*pd.steps,pd.u_0,'r-') # simply shift input signal and plot it again; red
 
