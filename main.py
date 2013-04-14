@@ -28,7 +28,7 @@ def main():
     #c_vec  = [0.6, 1.5, 2.0, 2.8, 3.0]
     c_vec  = [0.3, 0.6]
     
-    v_vec  = [0.0001, 0.001, 0.01]
+    v_vec  = [0.0, 0.0001, 0.001, 0.01]
     
     #step_vec = [10,50,100,500,1000]
     step_vec = [100]
@@ -37,7 +37,7 @@ def main():
     signal_vec =['step', 'wave']
     
     #method_vec = ['lw', 'upw', 'lf', 'cn']
-    method_vec = ['lw', 'upw']                  # methods used for flow-calculation
+    method_vec = ['upw']                  # methods used for flow-calculation
     
     # iterate over all combinations!
     for par in product(dx_vec, dt_vec, c_vec, v_vec, step_vec): 
