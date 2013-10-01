@@ -3,7 +3,25 @@ Lax Wendroff scheme
 '''
 
 
-def calcLaxWendroff(pd, to_step):   #pd ... project data
+def calcLaxWendroff(pd, method, to_step):   #pd ... project data
+
+    stable_calc = pd.CFL2 + 2.0*pd.v*pd.dt/((pd.dx)**2)
+    pd.is_stable[method] = (stable_calc<=1)
+        
+    pd.legend_adder[method] = "stable? " + str(pd.is_stable[method]) + \
+                "\nCr = " + str(pd.CFL) + \
+                "\nPE = " + str(pd.PE) + \
+                "\nCr(Cr+2/PE) = " + str(stable_calc)
+                
+                
+    if pd.PE != 0:
+        stab_str_transp = str(pd.CFL*(1.0+2.0/pd.PE))
+    else:
+        stab_str_transp = "NA"
+    
+    # b ... temporary variable for better readability
+    b = 2.0 * pd.v / (pd.c * pd.c * pd.dt)
+    print ("b = ", b)
     
     for n in range(1,to_step) :
         
@@ -18,8 +36,6 @@ def calcLaxWendroff(pd, to_step):   #pd ... project data
         #=======================================================================
           
         # new: transport equation
-        # b ... temporary variable for better readability
-        b = 2.0 * pd.v / (pd.c * pd.c * pd.dt)
         pd.u_1[1:-1] = \
                     + ( (pd.CFL + pd.CFL2 + b) /2.0) * pd.u_0[:-2]\
                     + (1 - pd.CFL2 - b)              * pd.u_0[1:-1]\
@@ -27,7 +43,7 @@ def calcLaxWendroff(pd, to_step):   #pd ... project data
                     
         #=======================================================================
         # old: only advection
-        # pd.u_1[1:-1] = \
+        #pd.u_1[1:-1] = \
         #            + ( (pd.CFL + pd.CFL2) /2.0) * pd.u_0[:-2]\
         #            + (1 - pd.CFL2)              * pd.u_0[1:-1]\
         #            + ( (pd.CFL2 - pd.CFL) /2.0) * pd.u_0[2:]

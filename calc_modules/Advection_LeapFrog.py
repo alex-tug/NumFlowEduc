@@ -4,7 +4,15 @@ Leap Frog scheme
 
 from Advection_Upwind import calcUpwind
 
-def calcLeapFrog(pd, to_step):  #pd ... project data
+def calcLeapFrog(pd, method, to_step):  #pd ... project data
+    
+    stable_calc = pd.CFL2 + 2.0*pd.v*pd.dt/((pd.dx)**2)
+    pd.is_stable[method] = (stable_calc<=1)
+    
+    pd.legend_adder[method] = "stable? " + str(pd.is_stable[method]) + \
+                "\nCr = " + str(pd.CFL) + \
+                "\nPE = " + str(pd.PE) + \
+                "\nCr(Cr+2/PE) = " + str(stable_calc)
     
     # calculate first step using Upwind:
     calcUpwind(pd, to_step=2)

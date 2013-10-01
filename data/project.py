@@ -15,7 +15,7 @@ class ProjectData():
     def __init__(self,  dx=0.002, dt=0.001, c=1.0, v=1.0, steps=50):
         
         self.dx = dx                        # dx ... spatial resolution
-        self.x = np.arange(-10,15, dx)      # vector of all x-values;  (from, to, resolution)
+        self.x = np.arange(-10,10, dx)      # vector of all x-values;  (from, to, resolution)
         self.size_x = np.size(self.x)       # number of x-values
         #print "self.size_x", self.size_x
         self.dt = dt                        # dt ... temporal resolution
@@ -38,17 +38,17 @@ class ProjectData():
         else:
             self.PE = 0.0
         
-        self.figures = {
-                            'lw':plt.figure('lw'), \
-                            'upw':plt.figure('upw'), \
-                            'lf':plt.figure('lf'), \
-                            'cn':plt.figure('cn')
-                        }  # store a figure for each method, doesn't work complete well...
-                                            
-        self.xlim_low = -4                  # boundaries for the figures
+        self.figures = {} # each method will add its figure
+          
+        # check stybility for each method
+        self.is_stable = {}
+          
+        self.xlim_low = -10                 # boundaries for the figures
         self.xlim_high = 10
-        self.ylim_low = -0.5
-        self.ylim_high = 1.5
+        self.ylim_low = -1.1
+        self.ylim_high = 1.0
+        
+        self.legend_adder = {} # additional legend-string, depending on chosen method
         
         #self.uu = np.zeros((self.size_x, self.steps))    # nonsense^^
         
@@ -59,21 +59,30 @@ class ProjectData():
         self.i_min0 = 1
         self.i_max0 = self.size_x-1         
         self.resetI_minmax()
-        
+
     def __del__(self):
         ''' destructor, ensure that all figure are completely eliminated '''
-        for fig in self.figures.itervalues():  plt.close(fig)
+        for fig in self.figures.itervalues():  
+            if plt is not None:
+                plt.close(fig)
+        plt.close('all')
         print("closed figures")
         
         
     def __str__(self):
         return 'dx = {!s} dt = {!s} c = {!s} steps = {!s}'\
                     .format(self.dx, self.dt, self.c, self.steps)
-        
+
+    def del_fig(self, method):
+        plt.clf()
+        if method in self.figures:
+            if plt is not None:
+                if self.figures[method] is not None:
+                    plt.close(self.figures[method])
+                    del self.figures[method]
     
     def resetI_minmax(self):
         ''' reset self.i_min and self.i_max to their initial values'''
-        
         self.i_min = self.i_min0
         self.i_max = self.i_max0
         
@@ -81,57 +90,55 @@ class ProjectData():
         ''' write input signal into u_00 using chosen shape'''
         if shape != '':
             self.signal_shape = shape
+            shape_max = 1.0
+            center = 1.0
+            
             if shape == 'step':
-                for i in range(self.xlim_low,self.size_x) :
-                    if self.x[i]<1 :
+                for i in range(self.xlim_low, self.size_x) :
+                    if self.x[i]<center :
                         self.u_00[i] = 1.0
                     else :
                         self.u_00[i] = 0.0
                         
             elif shape == 'tri':    # triangle
-                for i in range(self.xlim_low,self.size_x) :
-                    if self.x[i]<0.5 :
-                        self.u_00[i] = 2 * self.x[i]
-                    elif self.x[i]<1.0 :
-                        self.u_00[i] = 2*(1.0 - self.x[i])
-                    else :
-                        self.u_00[i] = 0.0
+                for i in range(self.xlim_low, self.size_x) :
+                    self.u_00[i] = max(0.0, shape_max - abs(center - self.x[i]))
+
                         
             elif shape == 'wall':
-                for i in range(self.xlim_low,self.size_x) :
-                    if self.x[i]<0.5 :
-                        self.u_00[i] = 0.0
-                    elif self.x[i]<1.0 :
-                        self.u_00[i] = 1.0
+                thickness = 2.0
+                for i in range(self.xlim_low, self.size_x) :
+                    if abs(self.x[i]-center)<thickness*0.5:
+                        self.u_00[i] = shape_max
                     else :
                         self.u_00[i] = 0.0
                         
             elif shape == 'thinwall':
-                for i in range(self.xlim_low,self.size_x) :
-                    if self.x[i]<0.7 :
-                        self.u_00[i] = 0.0
-                    elif self.x[i]<0.72 :
-                        self.u_00[i] = 1.0
+                thickness = 0.2
+                for i in range(self.xlim_low, self.size_x) :
+                    if abs(self.x[i]-center)<thickness*0.5:
+                        self.u_00[i] = shape_max
                     else :
                         self.u_00[i] = 0.0
             
             elif shape == 'gauss':
-                sigma = 0.15
-                mue = 0.5
-                for i in range(self.xlim_low,self.size_x) :
-                    if self.x[i]<1.0 :
-                        self.u_00[i] = 0.5  * 1.0/(sigma * np.sqrt(2 * np.pi)) \
-                                            * np.exp( - 0.5 * ((self.x[i]-mue)/sigma)**2 )
+                # f_max = 1 / (sigma * sqrt(2*pi))
+                sigma = 1.0 / (shape_max * np.sqrt(2*np.pi))
+                mue = center
+                for i in range(self.xlim_low, self.size_x) :
+                    if self.x[i]<5.0 :
+                        self.u_00[i] = shape_max \
+                                        * np.exp( - 0.5 * ((self.x[i]-mue)/sigma)**2 )
                     else :
                         self.u_00[i] = 0.0
                         
             elif shape == 'wave':
-                amp = 0.5
-                fact = 2.0
+                amp = shape_max
+                fact = 0.5
                 phase = 0.5
                 offset = 0.5
-                for i in range(self.xlim_low,self.size_x) :
-                    if self.x[i]<1.0 :
+                for i in range(self.xlim_low, self.size_x) :
+                    if self.x[i]<center :
                         self.u_00[i] = amp * np.sin(fact*(self.x[i]-phase)*(2*np.pi)) + offset
                     else :
                         self.u_00[i] = 0.0
@@ -156,13 +163,16 @@ class ProjectData():
         as .png to out_path(default='images/') 
         '''
         
-        out_filename = '{0}-{1}-dx_{2:.2f}-dt_{3:.2f}-c_{4:.2f}-v_{5}-steps_{6}'\
-                        .format(method, self.signal_shape, self.dx, self.dt, self.c, self.v, self.steps)
+        out_filename = '{0}-{1}-PE_{2:.1f}-dx_{3:.3f}-dt_{4:.3f}-c_{5:.2f}-v_{6}-steps_{7}'\
+                        .format(method, self.signal_shape, self.PE, self.dx, self.dt, self.c, self.v, self.steps)
         
         makeSurePathExists(out_path)
         
         #self.fig_lw.savefig(out_path + out_filename + '.eps')
-        self.figures[method].savefig(out_path + out_filename + '.png')
-        
-        print("plotted {!s} to {!s}".format(out_filename + '.png', out_path))
+        if method in self.figures:
+            self.figures[method].savefig(out_path + out_filename + '.png')
+            print("plotted {!s} to {!s}".format(out_filename + '.png', out_path))
+        else:
+            print("printFig: figure for method '{!s}' not found!".format(method))
+            
     

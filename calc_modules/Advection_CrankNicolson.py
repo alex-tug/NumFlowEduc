@@ -6,7 +6,7 @@ import numpy as np
 import scipy.sparse as sparse
 import scipy.linalg as la
 
-def calcCrankNicolson(pd, to_step): #pd ... project data
+def calcCrankNicolson(pd, method, to_step): #pd ... project data
     ''' 
     Crank-Nicolson scheme according to: 
         Malcherek, 'Num.Methoden d. Stroemungsmech.' Eq: 5.13, p.59
@@ -16,7 +16,14 @@ def calcCrankNicolson(pd, to_step): #pd ... project data
     NOT FINISHED!
     '''
     
-    th = 0.75   # theta, Crank-Nicolson is stable for theta >= 0.5
+    th = 1.0   # theta, Crank-Nicolson is stable for theta >= 0.5
+    
+    pd.is_stable[method] = (th>=0.5)
+        
+    pd.legend_adder[method] = "stable? " + str(pd.is_stable[method]) + \
+                "\nCr = " + str(pd.CFL) + \
+                "\nPE = " + str(pd.PE) + \
+                "\nth = " + str(th)
     
     # A ... Band(!)-Matrix which comes from the CrankNicolson formula
     # A:
