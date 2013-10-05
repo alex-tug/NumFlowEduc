@@ -28,7 +28,7 @@ def main():
     #c_vec  = [0.6, 1.5, 2.0, 2.8, 3.0]
     c_vec  = [0.2]
     
-    v_vec  = [0.01] #, 0.01
+    v_vec  = [0.0, 0.0001, 0.001, 0.01]
     
     #step_vec = [10,50,100,500,1000]
     step_vec = [100]
@@ -39,6 +39,7 @@ def main():
     #method_vec = ['lw', 'upw', 'lf', 'cn', 'ftcs_diff', 'ftcs_transp', _
     #                   'upw_transp', 'lw_transp', 'cn_transp']
     method_vec = ['upw_transp', 'cn_transp']                  # methods used for flow-calculation
+
     
     # iterate over all combinations!
     for par in product(dx_vec, dt_vec, c_vec, v_vec, step_vec): 
