@@ -2,11 +2,7 @@
 Dinge die momentan nicht funktionieren oder noch zu erledigen sind:
 
 - CrankNicolson-Verfahren vervollstaendigen
-	funktioniert mittlerweile, 
-	koennte schneller sein, 
-	muss noch getestet werden
+	tlw. instabil obwohl Stabilitätsbed. erfüllt
 	
-- wenn die zu plottenden Werte auf unendlich springen, 
-	wirft matplotlib einen error (cast nach int funktioniert dann nicht mehr)
-
 - Stabilitätskriterien abprüfen und Meldung anzeigen wenn erfüllt / nicht erfüllt
+	- verbessern

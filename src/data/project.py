@@ -7,8 +7,9 @@ project module
 import numpy as np
 from matplotlib import pyplot as plt
 import csv
+import os
 
-from io_handling.file_handling import makeSurePathExists
+from io_handling.file_handling import createPNG, createCSV
 
 class ProjectData():
     # this class holds all input and output data for the flow-calculations
@@ -170,14 +171,12 @@ class ProjectData():
         out_filename = '{0}-{1}-PE_{2:.1f}-dx_{3:.3f}-dt_{4:.3f}-c_{5:.2f}-v_{6}-steps_{7}'\
                         .format(method, self.signal_shape, self.PE, self.dx, self.dt, self.c, self.v, self.steps)
         
-        makeSurePathExists(out_path)
-        
-        #self.fig_lw.savefig(out_path + out_filename + '.eps')
         if (method in self.figures) and (out_path != ''):
-            self.figures[method].savefig(out_path + out_filename + '.png')
+            createPNG(out_path, out_filename, self.figures[method])
             print("plotted {!s} to {!s}".format(out_filename + '.png', out_path))
         else:
             print("printFig: figure for method '{!s}' not found!".format(method))
+        
     
     def writeAsCSV(self, out_path='', method=''):
         ''' 
@@ -187,16 +186,9 @@ class ProjectData():
             
         out_filename = '{0}-{1}-PE_{2:.1f}-dx_{3:.3f}-dt_{4:.3f}-c_{5:.2f}-v_{6}-steps_{7}'\
                         .format(method, self.signal_shape, self.PE, self.dx, self.dt, self.c, self.v, self.steps)
-        
-        makeSurePathExists(out_path)
-        
+                
         if (method in self.figures) and (out_path != ''):
-            with open(out_path + out_filename + '.csv', 'wb') as f:
-                cw = csv.writer(f, delimiter=' ',\
-                                        quotechar='|', quoting=csv.QUOTE_MINIMAL)
-                cw.writerow(['x'] + ['y_'+method])
-                # reshape self.x from x.shape=(size,1) to (size,)
-                cw.writerows(zip(self.x.reshape(self.x.size), self.u_1))
+            createCSV(out_path, out_filename, method, self.x, self.u_1)            
             
             print("wrote {!s} to {!s}".format(out_filename + '.csv', out_path))
         else:

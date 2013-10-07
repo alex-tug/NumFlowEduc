@@ -1,6 +1,7 @@
 *.pyc
-outut\
+output\
 output/*
+.*
 .git\
 .project
 .pydevproject

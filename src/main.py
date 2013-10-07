@@ -15,7 +15,7 @@ from data.project import ProjectData
 
 def main():
     t0 = t.time()
-    outputfolder = 'output/'
+    outputfolder = '../output/'
     
     # vectors will be used to iterate over all possible combinations of parameter
     # for description of parameters, see class ProjectData in data/project.py
