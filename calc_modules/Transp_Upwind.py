@@ -7,10 +7,10 @@ def calcUpwindTransport(pd, method, to_step):    #pd ... project data
 
     Ne = pd.v * pd.dt / (pd.dx**2) # = pd.CFL / pd.PE 
     
-    stable_calc = pd.CFL + 2.0*Ne
-    pd.is_stable[method] = (stable_calc<=1)
-    stable_calc = Ne
-    pd.is_stable[method] = (stable_calc<=0.5)
+    is_stable_1 = (pd.CFL + 2.0*Ne) <= 1.0          # p.102
+    is_stable_2 = ((1.0 - pd.CFL) * pd.PE ) <=2.0   # p.102
+
+    pd.is_stable[method] = is_stable_1 and is_stable_2
     
     pd.legend_adder[method] = "stable? " + str(pd.is_stable[method]) + \
                 "\nCr = " + str(pd.CFL) + \

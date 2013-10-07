@@ -6,6 +6,7 @@ project module
 
 import numpy as np
 from matplotlib import pyplot as plt
+import csv
 
 from io_handling.file_handling import makeSurePathExists
 
@@ -15,7 +16,8 @@ class ProjectData():
     def __init__(self,  dx=0.002, dt=0.001, c=1.0, v=1.0, steps=50):
         
         self.dx = dx                        # dx ... spatial resolution
-        self.x = np.arange(-10,10, dx)      # vector of all x-values;  (from, to, resolution)
+        self.x_max = 100
+        self.x = np.arange(0,self.x_max, dx) # vector of all x-values;  (from, to, resolution)
         self.size_x = np.size(self.x)       # number of x-values
         #print "self.size_x", self.size_x
         self.dt = dt                        # dt ... temporal resolution
@@ -38,15 +40,17 @@ class ProjectData():
         else:
             self.PE = 0.0
         
+        self.NE = self.v *self.dt / (self.dx**2)
+        
         self.figures = {} # each method will add its figure
           
         # check stybility for each method
         self.is_stable = {}
           
-        self.xlim_low = -10                 # boundaries for the figures
-        self.xlim_high = 10
+        self.xlim_low = 0                 # boundaries for the figures
+        self.xlim_high = 100
         self.ylim_low = -1.1
-        self.ylim_high = 1.0
+        self.ylim_high = 2.0
         
         self.legend_adder = {} # additional legend-string, depending on chosen method
         
@@ -91,7 +95,7 @@ class ProjectData():
         if shape != '':
             self.signal_shape = shape
             shape_max = 1.0
-            center = 1.0
+            center = 20.0
             
             if shape == 'step':
                 for i in range(self.xlim_low, self.size_x) :
@@ -126,11 +130,11 @@ class ProjectData():
                 sigma = 1.0 / (shape_max * np.sqrt(2*np.pi))
                 mue = center
                 for i in range(self.xlim_low, self.size_x) :
-                    if self.x[i]<5.0 :
-                        self.u_00[i] = shape_max \
-                                        * np.exp( - 0.5 * ((self.x[i]-mue)/sigma)**2 )
-                    else :
-                        self.u_00[i] = 0.0
+                    #if self.x[i]<5.0 :
+                    self.u_00[i] = shape_max \
+                                * np.exp( - 0.5 * ((self.x[i]-mue)/sigma)**2 )
+                    #else :
+                    #    self.u_00[i] = 0.0
                         
             elif shape == 'wave':
                 amp = shape_max
@@ -157,22 +161,48 @@ class ProjectData():
     #===========================================================================
     
     
-    def printFig(self, out_path='images/', method='lw'):
+    def printFig(self, out_path='', method=''):
         ''' 
-        print figure of chosen method(default='lw') 
+        print figure of chosen method
         as .png to out_path(default='images/') 
         '''
-        
+            
         out_filename = '{0}-{1}-PE_{2:.1f}-dx_{3:.3f}-dt_{4:.3f}-c_{5:.2f}-v_{6}-steps_{7}'\
                         .format(method, self.signal_shape, self.PE, self.dx, self.dt, self.c, self.v, self.steps)
         
         makeSurePathExists(out_path)
         
         #self.fig_lw.savefig(out_path + out_filename + '.eps')
-        if method in self.figures:
+        if (method in self.figures) and (out_path != ''):
             self.figures[method].savefig(out_path + out_filename + '.png')
             print("plotted {!s} to {!s}".format(out_filename + '.png', out_path))
         else:
             print("printFig: figure for method '{!s}' not found!".format(method))
+    
+    def writeAsCSV(self, out_path='', method=''):
+        ''' 
+        export data of chosen method
+        as .csv to out_path(default='images/') 
+        '''
+            
+        out_filename = '{0}-{1}-PE_{2:.1f}-dx_{3:.3f}-dt_{4:.3f}-c_{5:.2f}-v_{6}-steps_{7}'\
+                        .format(method, self.signal_shape, self.PE, self.dx, self.dt, self.c, self.v, self.steps)
+        
+        makeSurePathExists(out_path)
+        
+        if (method in self.figures) and (out_path != ''):
+            with open(out_path + out_filename + '.csv', 'wb') as f:
+                cw = csv.writer(f, delimiter=' ',\
+                                        quotechar='|', quoting=csv.QUOTE_MINIMAL)
+                cw.writerow(['x'] + ['y_'+method])
+                # reshape self.x from x.shape=(size,1) to (size,)
+                cw.writerows(zip(self.x.reshape(self.x.size), self.u_1))
+            
+            print("wrote {!s} to {!s}".format(out_filename + '.csv', out_path))
+        else:
+            print("writeAsCSV: data for method '{!s}' not found!".format(method))
+        
+            
+        
             
     
