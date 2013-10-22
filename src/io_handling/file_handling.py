@@ -25,17 +25,32 @@ def createPNG(path, filename, fig):
         raise
         
      
-def createCSV(path, filename, method, x, y):     
+def createCSV(path, filename, pd):     
+
+    x = pd.x
+    data = []
+    data.append(x.reshape(x.size))
+    
+    label = ['x']
+    
+    for m in pd.methods.itervalues():
+        data.append(m.u_final)
+        label.append(['y_'+m.name])
+        
 
     try:
         makeSurePathExists(path)
         
         with open(os.path.join(path, filename+'.csv'), 'wb') as f:
             cw = csv.writer(f, delimiter=' ',\
-                                    quotechar='|', quoting=csv.QUOTE_MINIMAL)
-            cw.writerow(['x'] + ['y_'+method])
+                                    quotechar='|', quoting=csv.QUOTE_MINIMAL)                                    
+            #cw.writerow(['x'] + ['y_'+method])                                    
+            cw.writerow(label)
+            
             # reshape self.x from x.shape=(size,1) to (size,)
-            cw.writerows(zip(x.reshape(x.size), y))
+            #cw.writerows(zip(x.reshape(x.size), y))
+            # zip(*data) ... transpose structure of list "data"
+            cw.writerows(zip(*data))
     except:
         print "Error in createCSV:", sys.exc_info()[0]
         raise

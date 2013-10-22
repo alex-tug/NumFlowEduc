@@ -6,7 +6,7 @@ import numpy as np
 import scipy.sparse as sparse
 import scipy.linalg as la
 
-def calcCrankNicolson(pd, method, to_step): #pd ... project data
+def calcAdvCrankNicolson(pd, m, to_step): #pd ... project data
     ''' 
     Crank-Nicolson scheme according to: 
         Malcherek, 'Num.Methoden d. Stroemungsmech.' Eq: 5.13, p.59
@@ -18,12 +18,12 @@ def calcCrankNicolson(pd, method, to_step): #pd ... project data
     
     th = 1.0   # theta, Crank-Nicolson is stable for theta >= 0.5
     
-    pd.is_stable[method] = (th>=0.5)
+    m.is_stable = (th>=0.5)
         
-    pd.legend_adder[method] = "stable? " + str(pd.is_stable[method]) + \
-                "\nCr = " + str(pd.CFL) + \
-                "\nPE = " + str(pd.PE) + \
-                "\nth = " + str(th)
+    m.legend_adder = "stable? " + str(m.is_stable)# + \
+                #"\nCr = " + str(round(pd.CFL, 2))# + \
+                #"\nPE = " + str(pd.PE) + \
+                #"\nth = " + str(th)
     
     # A ... Band(!)-Matrix which comes from the CrankNicolson formula
     # A:
@@ -47,38 +47,39 @@ def calcCrankNicolson(pd, method, to_step): #pd ... project data
     c = th/2.0 * pd.CFL * (-1)
     
     d = np.zeros(size)
-    m = np.zeros(size)
+    mat = np.zeros(size)
 
     d[0] = b
     for j in range(1, size-1):
         
-        m[j] = a / d[j-1]
+        mat[j] = a / d[j-1]
         
-        d[j] = b - m[j] * c
+        d[j] = b - mat[j] * c
 
+    u_0 = pd.u_00.copy()
+    u_1 = u_0.copy()
+    
     for n in range(1, to_step) : # timesteps
         
         y = np.zeros(size)                        
 
-        y[0] = pd.u_0[0]        
+        y[0] = u_0[0]        
         for i in range(1, size-1):
-            y[i] = pd.u_0[i] - m[i] * y[i-1]
-            #if i < 4: print i, "  y[i]: ", y[i]
+            y[i] = u_0[i] - mat[i] * y[i-1]
         
-        #print "y[size-1]: ", y[size-1], "  n=", n, "  th=", th
-        #print "d[size-1]: ", d[size-1]
-        
-        pd.u_1[size-1] = y[size-1] / d[size-1]
+        u_1[size-1] = y[size-1] / d[size-1]
         for j in range(size-2, 0, -1):            
-            pd.u_1[j] = pd.u_0[j] - m[j] * y[j-1]
+            u_1[j] = u_0[j] - mat[j] * y[j-1]
 
 
-        pd.u_n1 = pd.u_0
-        pd.u_0 = pd.u_1     # calculated values are input values for the next step
+        #u_n1 = u_0
+        u_0 = u_1     # calculated values are input values for the next step
         
-        pd.i_min += 1       # first point can't be calculated, so its value is undefined
-        pd.i_max -= 1       # last point can't be calculated, so its value is undefined 
+        m.i_min += 1       # first point can't be calculated, so its value is undefined
+        m.i_max -= 1       # last point can't be calculated, so its value is undefined 
         
+    m.u_1 = u_1.copy()
+    m.u_final = u_1.copy()
         
 def calcCrankNicolson_old(pd, to_step): #pd ... project data
     ''' 
