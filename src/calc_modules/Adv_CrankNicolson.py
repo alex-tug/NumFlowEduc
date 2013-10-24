@@ -20,10 +20,6 @@ def calcAdvCrankNicolson(pd, m, to_step): #pd ... project data
     
     m.is_stable = (th>=0.5)
         
-    m.legend_adder = "stable? " + str(m.is_stable)# + \
-                #"\nCr = " + str(round(pd.CFL, 2))# + \
-                #"\nPE = " + str(pd.PE) + \
-                #"\nth = " + str(th)
     
     # A ... Band(!)-Matrix which comes from the CrankNicolson formula
     # A:
@@ -75,10 +71,13 @@ def calcAdvCrankNicolson(pd, m, to_step): #pd ... project data
         #u_n1 = u_0
         u_0 = u_1     # calculated values are input values for the next step
         
-        m.i_min += 1       # first point can't be calculated, so its value is undefined
-        m.i_max -= 1       # last point can't be calculated, so its value is undefined 
+        u_1[0] = 0    # 'boundary conditions', just for now, ToDo
+        u_1[-1] = 0    # 'boundary conditions', just for now, ToDo
+        #m.i_min += 1       # first point can't be calculated, so its value is undefined
+        #m.i_max -= 1       # last point can't be calculated, so its value is undefined 
         
     m.u_1 = u_1.copy()
+    aa2 = u_1.copy()
     m.u_final = u_1.copy()
         
 def calcCrankNicolson_old(pd, to_step): #pd ... project data

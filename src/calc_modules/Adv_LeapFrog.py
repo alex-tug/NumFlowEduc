@@ -9,7 +9,7 @@ def calcAdvLeapFrog(pd, m, to_step):  #pd ... project data
     stable_calc = pd.CFL2 + 2.0*pd.v*pd.dt/((pd.dx)**2)
     m.is_stable = (stable_calc<=1)
     
-    m.legend_adder = "stable=" + str(m.is_stable)# + \
+    #m.legend_adder = "stable=" + str(m.is_stable)# + \
                 #"\nCr = " + str(round(pd.CFL, 2)) + \
                 #"\nPE = " + str(pd.PE) + \
                 #"\nCr(Cr+2/PE) = " + str(stable_calc)

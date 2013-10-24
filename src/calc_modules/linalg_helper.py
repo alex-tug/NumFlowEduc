@@ -4,7 +4,7 @@
 
 import numpy as np
    
-def solve_trid(lower, main, upper, v_inhom, n):
+def solveTrid(lower, main, upper, v_inhom, n):
     # a, b, c ... vectors of the tridiagonal matrix
     #           b ... main diagonal
     # v_inhom ... inhomogeneous vector
@@ -39,6 +39,14 @@ def solve_trid(lower, main, upper, v_inhom, n):
         
     return x
         
-        
-        
+
+def discreteIntegration(y, stepsize=1.0):
+    '''
+        wrap ,method for discrete integration
+    '''
+
+    return np.trapz(y, dx=stepsize)
+    
+
+
         

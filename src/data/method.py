@@ -7,6 +7,7 @@ method data module
 import numpy as np
 
 from config import modules
+from calc_modules.linalg_helper import discreteIntegration
 
 
 class MethodData(object):
@@ -42,6 +43,11 @@ class MethodData(object):
             modules[self.name](self.pd, self, to_step=self.pd.steps)
         else:
             print "error in method/calc: method not found."
+        
+        self.legend_adder = "stable=" + str(self.is_stable) + self.legend_adder
+            
+    def getArea(self):
+        return discreteIntegration(self.u_final, self.pd.dx)
 
         
 

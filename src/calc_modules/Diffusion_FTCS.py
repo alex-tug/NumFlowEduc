@@ -9,12 +9,7 @@ def calcDiffusionFTCS(pd, m, to_step):    #pd ... project data
     
     stable_calc = Ne
     m.is_stable = (stable_calc<=0.5)
-    
-    m.legend_adder = "stable? " + str(m.is_stable) + \
-                "\nCr = " + str(round(pd.CFL,2))# + \
-                #"\nPE = " + str(pd.PE) + \
-                #"\nNe = " + str(Ne)
-                
+                    
       
     u_0 = pd.u_00.copy()
     u_1 = pd.u_00.copy()  
@@ -30,7 +25,6 @@ def calcDiffusionFTCS(pd, m, to_step):    #pd ... project data
         u_1[-1] = 0  # 'boundary conditions', just for now, ToDo
         #m.i_max -= 1
         #m.i_min += 1       # since first point can't be calculated, so its value is undefined
-
         
         u_0 = u_1     # calculated values are input values for the next step
         

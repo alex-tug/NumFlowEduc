@@ -12,9 +12,8 @@ def calcTranspAnalytic(pd, m, to_step): #pd ... project data
     
     m.is_stable = True
         
-    m.legend_adder = "stable=" + str(m.is_stable) + \
-                "\nCr = " + str(round(pd.CFL,3)) + \
-                "\nPE = " + str(round(pd.PE,3))
+    m.legend_adder =  "\nCr = " + str(round(pd.CFL,3)) + \
+                      "\nPE = " + str(round(pd.PE,3))
     
     # analytic solution
     # based on fourier transformation and script Malcherek: p.99 (eq.9.2)
@@ -27,6 +26,7 @@ def calcTranspAnalytic(pd, m, to_step): #pd ... project data
     # add if pd.Ne = 0 => simply shift input signal
     # advection: simply shift signal
     u_0_adv[i_f:len(u_0)] = u_0[:len(u_0)-i_f]
+    u_0_adv[:i_f] = 0.0
     
     
     # diffusion: do fft, scale coefficients, do ifft

@@ -10,7 +10,7 @@ def calcTranspFTCS(pd, m, to_step):    #pd ... project data
     stable_calc = Ne
     m.is_stable = (stable_calc<=0.5)
         
-    m.legend_adder = "stable=" + str(m.is_stable)# + \
+    #m.legend_adder = "stable=" + str(m.is_stable)# + \
                 #"\nCr = " + str(round(pd.CFL, 2))# + \
                 #"\nPE = " + str(pd.PE) + \
                 #"\nNe = " + str(Ne)

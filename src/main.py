@@ -41,11 +41,14 @@ def main():
                     pd.calc(method)
                     # calculate using chosen method                    
                     t2 = t.time()
-                    print ("time per step - %s: %.2f ms" % (method, (t2-t1)/par[4]*1000))
+                    #print ("time per step - %s: %.2f ms" % (method, (t2-t1)/par[4]*1000))
+                    
+                    print("method: %s: area = %.2f" % (method, pd.methods[method].getArea()))
                     
                 # export results
                 pd.printFig(out_path=outputfolder+'images/')
                 pd.writeAsCSV(out_path=outputfolder+'csv/')
+                
                     
                 pd.del_fig()
         finally:

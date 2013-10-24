@@ -13,14 +13,11 @@ def calcTranspCN(pd, m, to_step):    #pd ... project data
 
     th = 0.75   # theta, Crank-Nicolson is stable for theta >= 0.5
     stable_calc = pd.CFL2 + 2.0*pd.NE
-    #print("stable_calc CN transp = ", stable_calc)
     
     m.is_stable = (stable_calc<=1) and (th >= 0.5) and (pd.PE < 2.0)
         
-    m.legend_adder = "stable=" + str(m.is_stable) + \
-                "\nNE = " + str(pd.NE) + \
-                "\nPE = " + str(pd.PE)
-                #"\nCr = " + str(pd.CFL) + \
+    m.legend_adder = "\nNE = " + str(pd.NE) + \
+                     "\nPE = " + str(pd.PE)
     
     u_0 = pd.u_00.copy()
     u_1 = pd.u_00.copy()
