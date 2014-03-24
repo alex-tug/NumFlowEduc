@@ -1,9 +1,10 @@
-'''
+"""
 Transport equation
 explicit - Lax-Wendroff scheme
-'''
+"""
 
-def calcTranspLW(pd, m, to_step):    #pd ... project data
+
+def calc_transp_LW(pd, m, to_step):    #pd ... project data
 
     stable_calc = pd.CFL2 + 2.0*pd.v*pd.dt/((pd.dx)**2)
     m.is_stable = (stable_calc<=1)
@@ -36,12 +37,12 @@ def calcTranspLW(pd, m, to_step):    #pd ... project data
                         + (-2.0*a         )    * u_0[1:-1]\
                         + ( 1.0*a  -1.0*b )    * u_0[2:]      
          
+        # boundary conditions
+        u_1[0] = pd.bc_upstream(n*pd.dt)
+        u_1[-1] = pd.bc_downstream(n*pd.dt)
+        
         u_0 = u_1     # calculated values are input values for the next step
          
-        u_1[0] = 0
-        u_1[-1] = 0  # 'boundary conditions', just for now, ToDo
-        #m.i_min += 1       # first point can't be calculated, so its value is undefined
-        #m.i_max -= 1       # last point can't be calculated, so its value is undefined
         
     m.u_1 = u_1.copy()
     m.u_final = u_1.copy()

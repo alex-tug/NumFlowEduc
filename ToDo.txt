@@ -1,8 +1,4 @@
 
 Dinge die momentan nicht funktionieren oder noch zu erledigen sind:
 
-- CrankNicolson-Verfahren vervollstaendigen
-	tlw. instabil obwohl Stabilitätsbed. erfüllt
-	
-- Stabilitätskriterien abprüfen und Meldung anzeigen wenn erfüllt / nicht erfüllt
-	- verbessern
+- Test auf Stabilitaet ist momentan eigentlich ein Test auf Positivitaet

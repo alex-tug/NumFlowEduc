@@ -1,5 +1,5 @@
 from distutils.core import setup
-import py2exe
+#import py2exe
 
 from distutils.filelist import findall
 import os
@@ -25,6 +25,6 @@ setup(
                                          'libgdk_pixbuf-2.0-0.dll',]
                        }
             },
-    data_files=matplotlibdata_files
+    data_files=matplotlibdata_files, requires=['numpy', 'matplotlib', 'scipy']
 )
 #                        'includes': 'matplotlib.numerix.random_array',

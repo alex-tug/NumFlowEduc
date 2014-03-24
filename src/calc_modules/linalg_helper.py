@@ -3,6 +3,7 @@
 '''
 
 import numpy as np
+import config_file
    
 def solveTrid(lower, main, upper, v_inhom, n):
     # a, b, c ... vectors of the tridiagonal matrix
@@ -47,6 +48,18 @@ def discreteIntegration(y, stepsize=1.0):
 
     return np.trapz(y, dx=stepsize)
     
+def float_eq(a, b):
+    '''
+        compare two float variables for equality
+    '''
+    #, loc_EPS=config_file.EPS
+    #if EPS == 0: EPS = config_file.EPS
+    
+    return True if (abs(a-b) < config_file.EPS) else False
+    #if abs(a-b) < EPS:
+    #    return True
+    #else:
+    #    False
 
 
         

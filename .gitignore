@@ -1,6 +1,7 @@
 *.pyc
 output\
 output/*
+archiv\
 .*
 .git\
 .project

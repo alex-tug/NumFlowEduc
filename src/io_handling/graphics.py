@@ -1,36 +1,103 @@
-'''
+"""
     do all stuff related to plotting and matplotlib and so on
-'''
+"""
 
 from matplotlib import pyplot as plt
 import numpy as np
 
-from calc_modules.base import replaceBadValues
+from calc_modules.base import cut_too_big_values
 
-def drawPlot(pd):
+
+def draw_plot(pd):
 
     plt.clf()                       # clear plot
 
-    fig = plt.figure()    
+    fig = plt.figure()   
+    ax = fig.add_axes([0.1, 0.1, 0.85, 0.85])
     
-    plt.plot(pd.x, pd.u_00,'k-', label="orig. signal")   # plot initial shape (green)
+    # get index of lowest x-value greater than pd.xlim_low
+    #x_i_min = np.argmax(pd.xlim_low < pd.x)
+    # get index of highest x-value smaller than pd.xlim_high    
+    #x_i_max = np.argmin(pd.xlim_high < pd.x) - 1
+    #print x_i_min, " - ", x_i_max
+    
+    ax.plot(pd.x, pd.u_00, 'k-', label="orig. signal")   # plot initial shape (green)
     
     for m in pd.methods.itervalues():     # plot each method's results
     
         x_temp = np.nan_to_num(pd.x)
-        #x_temp = np.reshape(x_temp,[x_temp,1])
         
-        u_temp = replaceBadValues(m.u_final)
+        u_temp = cut_too_big_values(m.u_final)
         
-        legend_str = m.name + " " + m.legend_adder
+        legend_str = m.name     # + " " + m.legend_adder
                 
-        plt.plot(x_temp[m.i_min:m.i_max], u_temp[m.i_min:m.i_max], label=legend_str)
+        ax.plot(x_temp[m.i_min:m.i_max], u_temp[m.i_min:m.i_max], label=legend_str)
             
-    plt.legend(loc=1, ncol=1, shadow=True)
-    plt.ylim(pd.ylim_low, pd.ylim_high)
+    ax.legend(loc=1, ncol=1, shadow=True, prop={'size': 24})
+    plt.ylim(pd.y_lim_low, pd.y_lim_high)
+    print "plt.xlim() 1: ", plt.xlim()
+    print "new values: ", (pd.x_lim_low, pd.x_lim_high)
+    plt.xlim(pd.x_lim_low, pd.x_lim_high)
+    print "plt.xlim() 2: ", plt.xlim()
+    #plt.set_xlim(pd.xlim_low, pd.xlim_high)
+    plt.xlabel('x', fontsize=18)
+    plt.ylabel('y', fontsize=18)
+    
+    for tick in ax.xaxis.get_major_ticks():
+        tick.label.set_fontsize(18) 
+    for tick in ax.yaxis.get_major_ticks():
+        tick.label.set_fontsize(18) 
     
     return fig
-    
+
+
+def draw_stability_plot(stability_data):
+
+    plt.clf()   # clear plot
+
+    fig = plt.figure()
+    ax = fig.add_axes([0.1, 0.1, 0.85, 0.85], label='axes1')
+
+    points_red = []
+    points_green = []
+    for el in stability_data:
+        print "el: ", el
+        if el[3]:
+            points_green.append([el[1], el[0]])
+        else:
+            points_red.append([el[1], el[0]])
+
+    print "points_green: ", points_green
+    print "points_red: ", points_red
+
+    if points_green:
+        x, y = zip(*points_green)
+        ax.plot(x, y, 'go')
+
+    if points_red:
+        x, y = zip(*points_red)
+        ax.plot(x, y, 'ro')
+
+    #ax.plot([0.01, 0.01, 0.99, 0.99], [0.01, 0.99, 0.01, 0.99], 'bo')
+
+    plt.xlim(-0.1, 2.1)
+    plt.ylim(-0.1, 2.1)
+    plt.grid()
+
+    plt.xlabel('NE', fontsize=18)
+    plt.ylabel('CLF', fontsize=18)
+
+    for tick in ax.xaxis.get_major_ticks():
+        tick.label.set_fontsize(18)
+    for tick in ax.yaxis.get_major_ticks():
+        tick.label.set_fontsize(18)
+
+    ax.get_xaxis().set_visible(True)
+    ax.get_yaxis().set_visible(True)
+
+    return fig
+
+
 #    axarr = [0,0,0,0]
 #    axarr[0] = fig1.add_subplot(2,2,1)
 #    axarr[1] = fig1.add_subplot(2,2,2)
@@ -54,4 +121,3 @@ def drawPlot(pd):
     #for ax in axarr:
     #    ax.set_xlim(pd.xlim_low,pd.xlim_high)      # set figure boundaries
     #    ax.set_ylim(pd.ylim_low,pd.ylim_high)
-        

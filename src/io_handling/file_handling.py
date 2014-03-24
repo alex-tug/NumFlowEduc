@@ -1,56 +1,76 @@
-'''
-input output handling/ file handling 
+"""
+input output handling/ file handling
     define makeSurePathExists(path)
-'''
+"""
 
 import os, sys
 import errno
 import csv
 
+
 # from: http://stackoverflow.com/questions/273192/python-best-way-to-create-directory-if-it-doesnt-exist-for-file-write
-def makeSurePathExists(path):
+def make_sure_path_exists(path):
     try:
         os.makedirs(path)
         print "created ", path
     except OSError as exception:
         if exception.errno != errno.EEXIST:
             raise
-        
-def createPNG(path, filename, fig):
+
+
+def create_png(path, filename, fig):
     try:
-        makeSurePathExists(path)        
-        fig.savefig(os.path.join(path, filename +'.png'))
+        make_sure_path_exists(path)
+        fig.savefig(os.path.join(path, filename + '.png'), dpi=300)
     except:
-        print "Error in createPNG:", sys.exc_info()[0]
+        print "Error in create_png:", sys.exc_info()[0]
         raise
-        
-     
-def createCSV(path, filename, pd):     
+
+
+def export_stability_check_results(path, signature, check_vec):
+    for method, data in check_vec.iteritems():
+        filename = signature + method
+        print "\ncheck_vec ", method
+        labels = ["CFL", "NE", "PE", "is_stable", method]
+        write_csv(path, filename, labels, data)
+
+
+def create_csv(path, filename, pd):
 
     x = pd.x
     data = []
     data.append(x.reshape(x.size))
     
-    label = ['x']
+    labels = ['x']
     
     for m in pd.methods.itervalues():
         data.append(m.u_final)
-        label.append(['y_'+m.name])
-        
+        labels.append(['y_' + m.name])
+
+    write_csv(path, filename, labels, data, transpose_flag=True)
+
+
+def write_csv(path, filename, labels, data, transpose_flag=False):
+    """
+        write labels and data into a csv-file
+    """
 
     try:
-        makeSurePathExists(path)
-        
+        make_sure_path_exists(path)
+
         with open(os.path.join(path, filename+'.csv'), 'wb') as f:
-            cw = csv.writer(f, delimiter=' ',\
-                                    quotechar='|', quoting=csv.QUOTE_MINIMAL)                                    
-            #cw.writerow(['x'] + ['y_'+method])                                    
-            cw.writerow(label)
-            
-            # reshape self.x from x.shape=(size,1) to (size,)
-            #cw.writerows(zip(x.reshape(x.size), y))
-            # zip(*data) ... transpose structure of list "data"
-            cw.writerows(zip(*data))
+            cw = csv.writer(f,
+                            delimiter=' ',
+                            quotechar='|',
+                            quoting=csv.QUOTE_MINIMAL)
+            cw.writerow(labels)
+
+            if transpose_flag:
+                # zip(*data) ... transpose structure of list "data"
+                cw.writerows(zip(*data))
+            else:
+                cw.writerows(data)
     except:
-        print "Error in createCSV:", sys.exc_info()[0]
+        print "Error in write_csv:", sys.exc_info()[0]
         raise
+
