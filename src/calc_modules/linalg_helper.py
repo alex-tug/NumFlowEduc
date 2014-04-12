@@ -1,11 +1,14 @@
-'''
+"""
     some functions for numerical calculation
-'''
+"""
 
 import numpy as np
 import config_file
-   
-def solveTrid(lower, main, upper, v_inhom, n):
+from numbers import Number
+from math import ceil, log
+
+
+def solve_trid(lower, main, upper, v_inhom, n):
     # a, b, c ... vectors of the tridiagonal matrix
     #           b ... main diagonal
     # v_inhom ... inhomogeneous vector
@@ -35,23 +38,24 @@ def solveTrid(lower, main, upper, v_inhom, n):
     
     x[n-1] = y[n-1] / u[n-1]
     
-    for j in range(n-2,0,-1):
+    for j in range(n-2, 0, -1):
         x[j] = (y[j]-upper[j]*x[j+1])/u[j]
         
     return x
         
 
-def discreteIntegration(y, stepsize=1.0):
-    '''
+def discrete_integration(y, step_size=1.0):
+    """
         wrap ,method for discrete integration
-    '''
+    """
 
-    return np.trapz(y, dx=stepsize)
-    
+    return np.trapz(y, dx=step_size)
+
+
 def float_eq(a, b):
-    '''
+    """
         compare two float variables for equality
-    '''
+    """
     #, loc_EPS=config_file.EPS
     #if EPS == 0: EPS = config_file.EPS
     
@@ -62,4 +66,8 @@ def float_eq(a, b):
     #    False
 
 
-        
+def return_next_power_of_two(val):
+    if isinstance(val, Number):
+        return pow(2, ceil(log(val, 2)))
+    else:
+        return 0

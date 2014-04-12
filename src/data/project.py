@@ -21,30 +21,30 @@ class ProjectData(object):
 
     def __init__(self, dx=0.002, dt=0.001, c=1.0, v=1.0, steps=50, signal='gauss'):
 
-        self.dx = dx                        # dx ... spatial resolution
+        self.dx = dx  # dx ... spatial resolution
 
         self.x_min = config_file.x_min
         self.x_max = config_file.x_max
         self.x = np.arange(self.x_min, self.x_max, dx)  # vector of all x-values;  (from, to, resolution)
-        self.size_x = np.size(self.x)       # number of x-values
+        self.size_x = np.size(self.x)  # number of x-values
         #print "self.size_x", self.size_x
-        self.dt = dt                        # dt ... temporal resolution
-        self.c = c                          # c  ... velocity of flow
-        self.v = v                          # v  ... coefficient for transport equation
-        self.steps = steps                  # number of steps to be calculated 
+        self.dt = dt  # dt ... temporal resolution
+        self.c = c  # c  ... velocity of flow
+        self.v = v  # v  ... coefficient for transport equation
+        self.steps = steps  # number of steps to be calculated
         # (full spatial shift = c * dt/dx * steps = CFL * steps)
         self.center_i = config_file.signal_center  # center of signal at t=0
         self.center_f = self.center_i + \
-                        self.c * self.dt * self.steps       # center of signal at t=t_max (of analytic solution)
+                        self.c * self.dt * self.steps  # center of signal at t=t_max (of analytic solution)
 
-        self.u_00 = np.zeros(self.size_x)   # to keep a copy of input signal
-        self.signal_shape = ''              # shape of input signal
+        self.u_00 = np.zeros(self.size_x)  # to keep a copy of input signal
+        self.signal_shape = ''  # shape of input signal
 
-        self.CFL = self.c * self.dt / self.dx   # Courant number, Upwind and LaxWendroff are stable for CFL <= 1
+        self.CFL = self.c * self.dt / self.dx  # Courant number, Upwind and LaxWendroff are stable for CFL <= 1
         print("CFL = {}".format(self.CFL))
-        self.CFL2 = self.CFL ** 2.0           # just for easy reading formulas
-        if self.v != 0:                       # avoid division by zero
-            self.PE = self.c * self.dx / self.v     # Peclet number
+        self.CFL2 = self.CFL ** 2.0  # just for easy reading formulas
+        if self.v != 0:  # avoid division by zero
+            self.PE = self.c * self.dx / self.v  # Peclet number
         else:
             self.PE = 0.0
 
@@ -89,10 +89,10 @@ class ProjectData(object):
             del self.fig
             self.fig = None
 
-    def bc_upstream(self, t):       # wrapper for boundary condition - upstream
+    def bc_upstream(self, t):  # wrapper for boundary condition - upstream
         return self.boundary_condition(t, str_type=self.bc_upstream_type)
 
-    def bc_downstream(self, t):     # wrapper for boundary condition
+    def bc_downstream(self, t):  # wrapper for boundary condition
         return self.boundary_condition(t, str_type=self.bc_downstream_type)
 
     def boundary_condition(self, t, str_type):
@@ -122,7 +122,7 @@ class ProjectData(object):
                     else:
                         self.u_00[i] = 0.0
 
-            elif shape == 'tri':    # triangle
+            elif shape == 'tri':  # triangle
                 for i in range(0, self.size_x):
                     self.u_00[i] = max(0.0, shape_max - abs(center - self.x[i]))
 
@@ -135,7 +135,8 @@ class ProjectData(object):
                         self.u_00[i] = 0.0
 
             elif shape == 'thinwall':
-                thickness = shape_max / 10.0
+                #thickness = shape_max / 10.0
+                thickness = 4.0 * self.dx
                 for i in range(0, self.size_x):
                     if abs(self.x[i] - center) < thickness * 0.5:
                         self.u_00[i] = shape_max

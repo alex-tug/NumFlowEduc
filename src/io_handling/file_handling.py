@@ -31,7 +31,7 @@ def export_stability_check_results(path, signature, check_vec):
     for method, data in check_vec.iteritems():
         filename = signature + method
         print "\ncheck_vec ", method
-        labels = ["CFL", "NE", "PE", "is_stable", method]
+        labels = ["CFL", "NE", "PE", "is_positive", "is_not_null", "is_stable", method]
         write_csv(path, filename, labels, data)
 
 

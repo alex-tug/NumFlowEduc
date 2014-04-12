@@ -58,21 +58,30 @@ def draw_stability_plot(stability_data):
     fig = plt.figure()
     ax = fig.add_axes([0.1, 0.1, 0.85, 0.85], label='axes1')
 
-    points_red = []
     points_green = []
+    points_blue = []
+    points_red = []
+
     for el in stability_data:
-        print "el: ", el
-        if el[3]:
-            points_green.append([el[1], el[0]])
-        else:
+        # print "el: ", el
+        if el[4]:
+            points_blue.append([el[1], el[0]])
+        elif not el[3]:
             points_red.append([el[1], el[0]])
+        else:
+            points_green.append([el[1], el[0]])
 
     print "points_green: ", points_green
+    print "points_blue: ", points_blue
     print "points_red: ", points_red
 
     if points_green:
         x, y = zip(*points_green)
         ax.plot(x, y, 'go')
+
+    if points_blue:
+        x, y = zip(*points_blue)
+        ax.plot(x, y, 'bo')
 
     if points_red:
         x, y = zip(*points_red)
@@ -85,7 +94,7 @@ def draw_stability_plot(stability_data):
     plt.grid()
 
     plt.xlabel('NE', fontsize=18)
-    plt.ylabel('CLF', fontsize=18)
+    plt.ylabel('CFL', fontsize=18)
 
     for tick in ax.xaxis.get_major_ticks():
         tick.label.set_fontsize(18)

@@ -7,7 +7,7 @@ method data module
 import numpy as np
 
 import config_file
-from calc_modules.linalg_helper import discreteIntegration
+from calc_modules.linalg_helper import discrete_integration
 from calc_modules.base import replaceBadValues
 
 
@@ -31,12 +31,12 @@ class MethodData(object):
         self.i_min0 = 0
         self.i_max0 = pd.size_x - 1
 
-        self.resetI_minmax()
+        self.reset_i_min_max()
 
         self.u_final = pd.u_00
 
-    def resetI_minmax(self):
-        ''' reset self.i_min and self.i_max to their initial values'''
+    def reset_i_min_max(self):
+        """ reset self.i_min and self.i_max to their initial values"""
         self.i_min = self.i_min0
         self.i_max = self.i_max0
 
@@ -46,16 +46,23 @@ class MethodData(object):
         else:
             print "error in method/calc: method not found."
 
-        a_1 = self.u_final.copy()
         self.u_final = replaceBadValues(self.u_final)
-        a_2 = self.u_final.copy()
 
         self.legend_adder = "stable=" + str(self.is_stable) + self.legend_adder
 
-        self.is_not_neg = np.all(self.u_final > -1.0 * config_file.EPS)
+    def get_area(self):
+        return discrete_integration(self.u_final, self.pd.dx)
 
-    def getArea(self):
-        return discreteIntegration(self.u_final, self.pd.dx)
+    def is_not_neg(self):
+        return np.all(self.u_final > -1.0 * config_file.EPS)
+
+    def is_nearly_zero(self):
+        return np.all(abs(self.u_final) < config_file.EPS)
+
+    def is_not_huge(self):
+        return np.all(abs(self.u_final) < 100 * config_file.signal_max)
+
+
 
         
 

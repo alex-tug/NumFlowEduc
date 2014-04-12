@@ -30,8 +30,8 @@ def main(dx_vec=config.dx_vec,
          step_vec=config.step_vec,
          signal_vec=config.signal_vec,
          method_vec=config.method_vec,
-         outputfolder=config.folder_output,
-    ):
+         output_folder=config.folder_output,
+        ):
     t_0 = t.time()
 
     check_vec = {}
@@ -58,27 +58,34 @@ def main(dx_vec=config.dx_vec,
                 #t_2 = t.time()
                 #print ("time per step - %s: %.2f ms" % (method, (t_2-t_1)/par[4]*1000))
 
-                print("method: %s: area = %.2f" % (method, pd.methods[method].getArea()))
+                print("method: %s: area = %.2f" % (method, pd.methods[method].get_area()))
 
-                check_vec[method].append([pd.CFL, round(pd.NE, 2), round(pd.PE, 2), pd.methods[method].is_not_neg])
+                check_vec[method].append([
+                                        pd.CFL,
+                                        round(pd.NE, 2),
+                                        round(pd.PE, 2),
+                                        pd.methods[method].is_not_neg(),
+                                        pd.methods[method].is_nearly_zero(),
+                                        pd.methods[method].is_not_huge()
+                ])
 
             # export results
-            pd.print_fig(out_path=outputfolder + 'images/')
-            pd.write_as_csv(out_path=outputfolder + 'csv/')
+            pd.print_fig(out_path=output_folder + 'images/')
+            #pd.write_as_csv(out_path=output_folder + 'csv/')
 
             pd.del_fig()
         finally:
             # delete ProjectData instance and its figures now. 
             # Otherwise figures may be wrong
-            del (pd)
+            del pd
 
     signature = "temp_"
     #'{0}-dx_{1:.3f}-dt_{2:.3f}-steps_{3}' \
     #.format(pd.signal_shape, self.dx, self.dt, self.steps)
-    export_stability_check_results(outputfolder + 'csv_stability/', signature, check_vec)
+    export_stability_check_results(output_folder + 'csv_stability/', signature, check_vec)
     for method in check_vec.keys():
         fig_stability = draw_stability_plot(check_vec[method])
-        create_png(outputfolder + 'images/', 'stability_' + method, fig_stability)
+        create_png(output_folder + 'images/', 'stability_' + method, fig_stability)
 
     t_n = t.time()
     print ("runtime main: %.3f s" % (t_n - t_0))

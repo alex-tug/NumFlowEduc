@@ -34,8 +34,8 @@ def calc_transp_implicit(pd, m, to_step):    # pd ... project data
     # include Dirichlet-boundary condition:
     A_data[1][0] = 1
     A_data[0][0] = 0
-    A_data[1][-1] = 1
-    A_data[2][-1] = 0
+    # A_data[1][-1] = 1
+    # A_data[2][-1] = 0
 
     try:
         for n in range(1, to_step):    # for each timestep
