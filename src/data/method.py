@@ -59,8 +59,6 @@ class MethodData(object):
         return discrete_integration(self.u_final, self.pd.dx)
 
     def is_not_neg(self):
-        #if self.name == "transp_cn":
-        #    print self.u_final[self.u_final<0]
         return np.all(self.u_final > -1.0 * config_file.EPS)
 
     def is_nearly_zero(self):

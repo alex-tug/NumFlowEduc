@@ -84,7 +84,6 @@ def main(dx_vec=config.dx_vec,
     signature = "temp_"
     #'{0}-dx_{1:.3f}-dt_{2:.3f}-steps_{3}' \
     #.format(pd.signal_shape, self.dx, self.dt, self.steps)
-
     export_stability_check_results(output_folder + 'csv_stability/', signature, check_vec)
     for method in check_vec.keys():
         fig_stability = draw_stability_plot(check_vec[method])

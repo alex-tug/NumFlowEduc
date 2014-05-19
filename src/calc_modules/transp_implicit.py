@@ -4,7 +4,7 @@ fully implicit scheme
 """
 
 import numpy as np
-from scipy import sparse
+# from scipy import sparse
 from scipy import linalg as la
 
 
@@ -32,6 +32,7 @@ def calc_transp_implicit(pd, m, to_step):    # pd ... project data
                     ])
 
     # include Dirichlet-boundary condition:
+
     #A_data[1][0] = 1
     #A_data[0][0] = 0
     #A_data[2][0] = 0

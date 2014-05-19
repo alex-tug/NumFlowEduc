@@ -12,6 +12,7 @@ import scipy.linalg as la
 def calc_transp_CN(pd, m, to_step):    # pd ... project data
 
     th = 0.5   # theta, Crank-Nicolson is unconditionally stable for theta >= 0.5
+
     stable_calc = pd.CFL2 + 2.0*pd.NE
     
     m.is_stable = (stable_calc <= 1) and (th >= 0.5) and (pd.PE < 2.0)
