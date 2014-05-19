@@ -6,7 +6,11 @@ explicit - Lax-Wendroff scheme
 
 def calc_transp_LW(pd, m, to_step):
 
-    stable_calc = pd.CFL2 + 2.0*pd.v*pd.dt/(pd.dx **2)
+    # a,b ... temporary variable for better readability
+    a = 0.5 * pd.CFL2 + pd.NE
+    b = 0.5 * pd.CFL
+
+    stable_calc = 2.0 * a
     m.is_stable = (stable_calc<=1)
                 
 #==============================================================================
@@ -15,27 +19,22 @@ def calc_transp_LW(pd, m, to_step):
 #     else:
 #         stab_str_transp = "NA"
 #==============================================================================
-    
-    # a,b ... temporary variable for better readability
-    a = 0.5 * stable_calc
-    b = 0.5 * pd.CFL
-    
+
     u_0 = pd.u_00.copy()
     u_1 = pd.u_00.copy()
     
-    for n in range(1, to_step):
+    for n in range(0, to_step):
         
         if pd.v == 0.0:
             #  only advection
             u_1[1:-1] += ( 1.0 + pd.CFL) *b  * u_0[:-2]\
-                        +      - pd.CFL2     * u_0[1:-1]\
+                        +(     - pd.CFL2)   * u_0[1:-1]\
                         +(-1.0 + pd.CFL) *b  * u_0[2:]
         else:       
         
-            u_1[1:-1] = u_0[1:-1]\
-                        +( 1.0*a  +1.0*b )    * u_0[:-2]\
-                        +(-2.0*a         )    * u_0[1:-1]\
-                        +( 1.0*a  -1.0*b )    * u_0[2:]
+            u_1[1:-1] =  (     a  +b    ) * u_0[:-2]\
+                        +(-2.0*a    +1.0) * u_0[1:-1]\
+                        +(     a  -b    ) * u_0[2:]
          
         # boundary conditions
         u_1[0] = pd.bc_upstream(n*pd.dt)

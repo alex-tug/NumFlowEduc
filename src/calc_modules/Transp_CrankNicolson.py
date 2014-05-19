@@ -11,7 +11,7 @@ import scipy.linalg as la
 
 def calc_transp_CN(pd, m, to_step):    # pd ... project data
 
-    th = 1.0   # theta, Crank-Nicolson is stable for theta >= 0.5
+    th = 0.5   # theta, Crank-Nicolson is unconditionally stable for theta >= 0.5
     stable_calc = pd.CFL2 + 2.0*pd.NE
     
     m.is_stable = (stable_calc <= 1) and (th >= 0.5) and (pd.PE < 2.0)
@@ -41,11 +41,11 @@ def calc_transp_CN(pd, m, to_step):    # pd ... project data
 
     u_right_side = pd.u_00.copy()
     try:
-        for n in range(1, to_step):
+        for n in range(0, to_step):
             #u_right_side = np.dot(B_band, u_0)
-            u_right_side[1:-1] =  (+0.5*th_inv*pd.CFL  +    th_inv*pd.NE      ) * u_0[0:-2]\
-                            +(                    -2.0*th_inv*pd.NE  +1.0) * u_0[1:-1]\
-                            +(-0.5*th_inv*pd.CFL  +    th_inv*pd.NE      ) * u_0[2:]
+            u_right_side[1:-1] = (+0.5*th_inv*pd.CFL  +    th_inv*pd.NE      ) * u_0[0:-2]\
+                                +(                    -2.0*th_inv*pd.NE  +1.0) * u_0[1:-1]\
+                                +(-0.5*th_inv*pd.CFL  +    th_inv*pd.NE      ) * u_0[2:]
             u_right_side[0] = pd.bc_upstream(n*pd.dt)
             u_right_side[-1] = pd.bc_downstream(n*pd.dt)
 

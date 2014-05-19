@@ -59,7 +59,7 @@ def calc_adv_CrankNicolson(pd, m, to_step):   # pd ... project data
     u_0 = pd.u_00.copy()
     u_1 = u_0.copy()
     
-    for n in range(1, to_step):    # timesteps
+    for n in range(0, to_step):    # timesteps
         
         y = np.zeros(size)                        
 

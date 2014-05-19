@@ -33,7 +33,12 @@ def draw_plot(pd):
                 
         ax.plot(x_temp[m.i_min:m.i_max], u_temp[m.i_min:m.i_max], label=legend_str)
             
-    ax.legend(loc=1, ncol=1, shadow=True, prop={'size': 24})
+    ax.legend(bbox_to_anchor=(0.4, 0.9, 0.0, 0.0),
+              loc=3, ncol=1, shadow=True, prop={'size': 24})
+    #bbox_to_anchor=(0.5, 0.7, 0.0, 0.0),
+
+    #ax.legend(loc=3, ncol=1, shadow=True, prop={'size': 24}, numpoints=1, scatterpoints = 1)
+
     plt.ylim(pd.y_lim_low, pd.y_lim_high)
     print "plt.xlim() 1: ", plt.xlim()
     print "new values: ", (pd.x_lim_low, pd.x_lim_high)

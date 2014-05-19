@@ -105,6 +105,9 @@ class ProjectData(object):
             offset = self.signal_max * 0.5
             return self.signal_max * 0.5 * np.sin(fact * t * (2 * np.pi)) + offset
 
+        elif str_type == 'constant':
+            return self.signal_max
+
         else:
             return 0.0
 
@@ -130,6 +133,9 @@ class ProjectData(object):
                 thickness = shape_max
                 for i in range(0, self.size_x):
                     if abs(self.x[i] - center) < (thickness * 0.5):
+                        # maybe add "+ config_file.EPS" into abs(...) to
+                        # exclude one point on one end of the shape
+                        # and include one point on the other end of the shape
                         self.u_00[i] = shape_max
                     else:
                         self.u_00[i] = 0.0

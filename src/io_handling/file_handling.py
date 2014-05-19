@@ -21,7 +21,7 @@ def make_sure_path_exists(path):
 def create_png(path, filename, fig):
     try:
         make_sure_path_exists(path)
-        fig.savefig(os.path.join(path, filename + '.png'), dpi=300)
+        fig.savefig(os.path.join(path, filename + '.png'), dpi=300, bbox_inches='tight')
     except:
         print "Error in create_png:", sys.exc_info()[0]
         raise

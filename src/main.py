@@ -18,9 +18,10 @@ from data.method import MethodData
 from io_handling.file_handling import create_png, export_stability_check_results
 from io_handling.graphics import draw_stability_plot
 
-import config_file as config # import outputfolder,\
+import config_file as config  # import outputfolder,\
 #dx_vec, dt_vec, c_vec, v_vec,\
 # step_vec, signal_vec, method_vec
+
 
 # parameter from config will be used as default
 def main(dx_vec=config.dx_vec,
@@ -31,7 +32,7 @@ def main(dx_vec=config.dx_vec,
          signal_vec=config.signal_vec,
          method_vec=config.method_vec,
          output_folder=config.folder_output,
-        ):
+):
     t_0 = t.time()
 
     check_vec = {}
@@ -47,31 +48,32 @@ def main(dx_vec=config.dx_vec,
         try:
             # iterate over all methods in method_vec
             for method in method_vec:
-                if not check_vec.has_key(method):
+                if not method in check_vec:     # .has_key(method)
                     check_vec[method] = []
 
                 pd.methods[method] = MethodData(pd, method)
 
-                #t_1 = t.time()
+                t_1 = t.time()
                 pd.calc(method)
                 # calculate using chosen method
-                #t_2 = t.time()
-                #print ("time per step - %s: %.2f ms" % (method, (t_2-t_1)/par[4]*1000))
+                t_2 = t.time()
+                print ("time - %s: %.2f ms" % (method, (t_2 - t_1) * 1000))
+                print ("time per step - %s: %.2f ms" % (method, (t_2 - t_1) / par[4] * 1000))
 
                 print("method: %s: area = %.2f" % (method, pd.methods[method].get_area()))
 
                 check_vec[method].append([
-                                        pd.CFL,
-                                        round(pd.NE, 2),
-                                        round(pd.PE, 2),
-                                        pd.methods[method].is_not_neg(),
-                                        pd.methods[method].is_nearly_zero(),
-                                        pd.methods[method].is_not_huge()
+                    pd.CFL,
+                    round(pd.NE, 2),
+                    round(pd.PE, 2),
+                    pd.methods[method].is_not_neg(),
+                    pd.methods[method].is_nearly_zero(),
+                    pd.methods[method].is_not_huge()
                 ])
 
             # export results
             pd.print_fig(out_path=output_folder + 'images/')
-            #pd.write_as_csv(out_path=output_folder + 'csv/')
+            pd.write_as_csv(out_path=output_folder + 'csv/')
 
             pd.del_fig()
         finally:
@@ -82,10 +84,11 @@ def main(dx_vec=config.dx_vec,
     signature = "temp_"
     #'{0}-dx_{1:.3f}-dt_{2:.3f}-steps_{3}' \
     #.format(pd.signal_shape, self.dx, self.dt, self.steps)
+
     export_stability_check_results(output_folder + 'csv_stability/', signature, check_vec)
     for method in check_vec.keys():
         fig_stability = draw_stability_plot(check_vec[method])
-        create_png(output_folder + 'images/', 'stability_' + method, fig_stability)
+        #create_png(output_folder + 'images/', 'stability_' + method, fig_stability)
 
     t_n = t.time()
     print ("runtime main: %.3f s" % (t_n - t_0))

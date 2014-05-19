@@ -31,7 +31,9 @@ class MethodData(object):
         self.i_min0 = 0
         self.i_max0 = pd.size_x - 1
 
-        self.reset_i_min_max()
+        self.i_min = self.i_min0
+        self.i_max = self.i_max0
+        #self.reset_i_min_max()
 
         self.u_final = pd.u_00
 
@@ -40,9 +42,12 @@ class MethodData(object):
         self.i_min = self.i_min0
         self.i_max = self.i_max0
 
-    def calc(self):
+    def calc(self, to_step=None):
+        if to_step is None:
+            to_step = self.pd.steps
+
         if self.name in config_file.modules:
-            config_file.modules[self.name](self.pd, self, to_step=self.pd.steps)
+            config_file.modules[self.name](self.pd, self, to_step=to_step)
         else:
             print "error in method/calc: method not found."
 
@@ -54,6 +59,8 @@ class MethodData(object):
         return discrete_integration(self.u_final, self.pd.dx)
 
     def is_not_neg(self):
+        #if self.name == "transp_cn":
+        #    print self.u_final[self.u_final<0]
         return np.all(self.u_final > -1.0 * config_file.EPS)
 
     def is_nearly_zero(self):

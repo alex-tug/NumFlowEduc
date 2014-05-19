@@ -11,7 +11,7 @@ def calc_transp_FTCS(pd, m, to_step):    # pd ... project data
     u_0 = pd.u_00.copy()
     u_1 = pd.u_00.copy()
         
-    for n in range(1, to_step):    # for each timestep
+    for n in range(0, to_step):    # for each timestep
         
         # FTCS scheme
         u_1[1:-1] =  (    +0.5*pd.CFL +1.0*pd.NE) * u_0[0:-2]\

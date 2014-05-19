@@ -1,17 +1,18 @@
-'''
+"""
 Advection
 explicit - Upwind scheme - second order
-'''
+"""
 
-def calc_adv_Upwind2nd(pd, m, to_step):    #pd ... project data
+
+def calc_adv_Upwind2nd(pd, m, to_step):
 
     stable_calc = pd.CFL
     m.is_stable = (stable_calc<=1)
                     
     u_0 = pd.u_00.copy()
     u_1 = pd.u_00.copy()
-    if (pd.v == 0.0):
-        for n in range(1,to_step) : # for each timestep ...        
+    if pd.v == 0.0:
+        for n in range(0, to_step):     # for each timestep ...
             # Upwind scheme          
                 
             # use 1st order upwind only u_1[1] (can't be calculated using 2nd order upw.)
@@ -24,7 +25,7 @@ def calc_adv_Upwind2nd(pd, m, to_step):    #pd ... project data
                         +4.0 *0.5*pd.CFL* u_0[1:-1]\
                         -3.0 *0.5*pd.CFL* u_0[2:]
                         
-            # 'boundary conditions'
+            # boundary condition
             u_1[0] = pd.bc_upstream(n*pd.dt)
             
             u_0 = u_1     # calculated values are input values for the next step
