@@ -3,20 +3,20 @@ Transport equation
 explicit - Upwind scheme
 """
 
-#from linalg_helper import float_eq
-
+import config_file
 
 def calc_transp_Upwind(pd, m, to_step):    # pd ... project data
     # alpha ... factor to determine which methods to use for differences
     # 1     ... backward differences
     # 0.5   ... central differences
     # 0     ... forward differences
-    alpha = 1.0
+
+    alpha = config_file.alpha
 
     # Ne ... Neumann's number
-    Ne = pd.v * pd.dt / (pd.dx**2)  # = pd.CFL / pd.PE
+    #Ne = pd.v * pd.dt / (pd.dx**2)  # = pd.CFL / pd.PE
         
-    stable_calc = pd.CFL + 2.0*Ne
+    stable_calc = pd.CFL + 2.0*pd.NE
     m.is_stable = (stable_calc<=1)
                     
     u_0 = pd.u_00.copy()
@@ -25,9 +25,9 @@ def calc_transp_Upwind(pd, m, to_step):    # pd ... project data
 
         # Upwind scheme
         u_1[1:-1] = u_0[1:-1]\
-            +((    +   alpha)* pd.CFL   +   Ne )  * u_0[0:-2]\
-            +((  1 - 2*alpha)* pd.CFL   - 2*Ne )  * u_0[1:-1]\
-            +(( -1 +   alpha)* pd.CFL   +   Ne )  * u_0[2:]
+            +((    +   alpha)* pd.CFL   +   pd.NE )  * u_0[0:-2]\
+            +((  1 - 2*alpha)* pd.CFL   - 2*pd.NE )  * u_0[1:-1]\
+            +(( -1 +   alpha)* pd.CFL   +   pd.NE )  * u_0[2:]
         
         # boundary conditions
         u_1[0] = pd.bc_upstream(n*pd.dt)

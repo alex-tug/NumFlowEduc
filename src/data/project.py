@@ -17,7 +17,7 @@ import config_file
 
 
 class ProjectData(object):
-    """ this class holds all input and output data for the flow-calculations """
+    """ this class holds all input and output data for the flow calculation """
 
     def __init__(self, dx=0.002, dt=0.001, c=1.0, v=1.0, steps=50, signal='gauss'):
 
@@ -179,7 +179,8 @@ class ProjectData(object):
             self.methods[method].calc()
 
     def calc_all(self):
-        for m in self.methods: m.calc()
+        for m in self.methods:
+            m.calc()
 
     def create_fig(self):
         self.fig = draw_plot(self)
@@ -214,7 +215,7 @@ class ProjectData(object):
         out_filename = '{0}-dx_{2:.3f}-dt_{3:.3f}-CFL_{4:.2f}-Ne_{5:.2f}-PE_{1:.2f}-steps_{6}' \
             .format(self.signal_shape, self.PE, self.dx, self.dt, self.CFL, self.NE, self.steps)
 
-        if (out_path != ''):
+        if out_path != '':
             create_csv(out_path, out_filename, self)
             print("wrote {!s} to {!s}".format(out_filename + '.csv', out_path))
         else:

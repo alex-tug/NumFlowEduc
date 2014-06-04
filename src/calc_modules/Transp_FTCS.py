@@ -4,7 +4,7 @@ explicit - FTCS scheme
 """
 
 
-def calc_transp_FTCS(pd, m, to_step):    # pd ... project data
+def calc_transp_ftcs(pd, m, to_step):    # pd ... project data
 
     m.is_stable = (pd.NE<=0.5)  & (pd.NE > 0)
        
