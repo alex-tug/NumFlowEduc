@@ -147,7 +147,7 @@ def calc_adv_CrankNicolson_old(pd, m, to_step):   # pd ... project data
     
     #print "A_band ", A_band
     
-    u_0_right = np.zeros(pd.size_x) 
+    # u_0_right = np.zeros(pd.size_x)
     
     #print("{}".format(np.dot(A_band_inv, u_0_right)))
     
