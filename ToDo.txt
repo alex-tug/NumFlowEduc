@@ -1,6 +1,0 @@
-
-Dinge die momentan nicht funktionieren oder noch zu erledigen sind:
-
-- Test auf Stabilitaet ist momentan eigentlich ein Test auf Positivitaet
-
-- Die Ausflussseitige Randbedingung bei transp_implicit ist falsch gesetzt

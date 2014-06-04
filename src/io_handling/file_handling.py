@@ -3,13 +3,17 @@ input output handling/ file handling
     define makeSurePathExists(path)
 """
 
-import os, sys
+import os
+import sys
 import errno
 import csv
 
 
-# from: http://stackoverflow.com/questions/273192/python-best-way-to-create-directory-if-it-doesnt-exist-for-file-write
 def make_sure_path_exists(path):
+    """
+        from: http://stackoverflow.com/questions/273192/
+        python-best-way-to-create-directory-if-it-doesnt-exist-for-file-write
+    """
     try:
         os.makedirs(path)
         print "created ", path
@@ -27,20 +31,15 @@ def create_png(path, filename, fig):
         raise
 
 
-def export_stability_check_results(path, signature, check_vec):
-    for method, data in check_vec.iteritems():
-        filename = signature + method
-        print "\ncheck_vec ", method
-        labels = ["CFL", "NE", "PE", "is_positive", "is_not_null", "is_stable", method]
-        write_csv(path, filename, labels, data)
+def export_stability_check_results(path, signature, method, data):
+    filename = signature + method
+    labels = ["CFL", "NE", "PE", "is_positive", "is_not_null", "is_stable", method]
+    write_csv(path, filename, labels, data)
 
 
 def create_csv(path, filename, pd):
-
     x = pd.x
-    data = []
-    data.append(x.reshape(x.size))
-    
+    data = [x.reshape(x.size)]
     labels = ['x']
     
     for m in pd.methods.itervalues():

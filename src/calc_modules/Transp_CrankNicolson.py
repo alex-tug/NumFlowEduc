@@ -8,10 +8,13 @@ import numpy as np
 import scipy.sparse as sparse
 import scipy.linalg as la
 
+import config_file
 
-def calc_transp_CN(pd, m, to_step):    # pd ... project data
+def calc_transp_cn(pd, m, to_step):    # pd ... project data
 
-    th = 0.5   # theta, Crank-Nicolson is unconditionally stable for theta >= 0.5
+    # theta, Crank-Nicolson is unconditionally stable for theta >= 0.5
+    th = config_file.th
+
 
     stable_calc = pd.CFL2 + 2.0*pd.NE
     
